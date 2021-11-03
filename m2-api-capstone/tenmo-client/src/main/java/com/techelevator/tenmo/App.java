@@ -76,7 +76,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+		//Non-MVP
+
 	}
 
 	private void sendBucks() {
