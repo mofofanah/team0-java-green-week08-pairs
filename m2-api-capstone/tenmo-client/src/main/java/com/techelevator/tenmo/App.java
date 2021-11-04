@@ -2,10 +2,11 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.auth.models.AuthenticatedUser;
 import com.techelevator.tenmo.auth.models.UserCredentials;
-import com.techelevator.tenmo.auth.services.AccountService;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.auth.services.AuthenticationService;
 import com.techelevator.tenmo.auth.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.UserService;
 
 public class App {
 
@@ -27,6 +28,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private ConsoleService console;
     private AuthenticationService authenticationService;
     private AccountService accountService = new AccountService(API_BASE_URL);
+    private UserService userService = new UserService(API_BASE_URL);
 
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -139,6 +141,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		    try {
 				currentUser = authenticationService.login(credentials);
 				accountService.setAUTH_TOKEN(currentUser.getToken());
+				userService.setAUTH_TOKEN(currentUser.getToken());
 				//TODO - Pass token to service classes
 			} catch (AuthenticationServiceException e) {
 				console.showLoginFailed(e.getMessage());

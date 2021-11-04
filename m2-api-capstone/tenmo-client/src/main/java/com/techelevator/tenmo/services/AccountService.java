@@ -1,4 +1,4 @@
-package com.techelevator.tenmo.auth.services;
+package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.models.Account;
 import org.springframework.http.HttpEntity;
