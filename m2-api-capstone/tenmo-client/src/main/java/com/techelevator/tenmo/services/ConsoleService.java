@@ -1,9 +1,13 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.auth.models.User;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleService {
@@ -77,6 +81,40 @@ public class ConsoleService {
 		out.flush();
 	}
 
+	public List<String> displayUserList(List<User> userList, Long userId) {
+
+		List<String> selectableIds = new ArrayList<>();
+		String leftColumn = "%-10s";
+		for (int i = 0; i < 30; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+		System.out.println(String.format(leftColumn, "Users"));
+		System.out.println(String.format(leftColumn, "ID") + "Name");
+
+		for (int i = 0; i < 30; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+
+		for (User user: userList) {
+			if((long)user.getId() != userId) {
+				selectableIds.add(user.getId().toString());
+
+				System.out.println(String.format(leftColumn, user.getId().toString()) + user.getUsername());
+
+			}
+
+		}
+
+		for (int i = 0; i < 10; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+
+		return selectableIds;
+	}
+
 	public String getUserInput(String prompt) {
 		out.print(prompt+": ");
 		out.flush();
@@ -91,6 +129,21 @@ public class ConsoleService {
 			String userInput = in.nextLine();
 			try {
 				result = Integer.parseInt(userInput);
+			} catch(NumberFormatException e) {
+				out.println(System.lineSeparator() + "*** " + userInput + " is not valid ***" + System.lineSeparator());
+			}
+		} while(result == null);
+		return result;
+	}
+
+	public Double getUserInputDouble(String prompt) {
+		Double result = null;
+		do {
+			out.print(prompt+": ");
+			out.flush();
+			String userInput = in.nextLine();
+			try {
+				result = Double.parseDouble(userInput);
 			} catch(NumberFormatException e) {
 				out.println(System.lineSeparator() + "*** " + userInput + " is not valid ***" + System.lineSeparator());
 			}

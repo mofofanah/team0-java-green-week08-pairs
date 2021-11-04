@@ -1,4 +1,4 @@
-package com.techelevator.tenmo.model;
+package com.techelevator.tenmo.models;
 
 import java.math.BigDecimal;
 
@@ -59,3 +59,7 @@ public class Transfer {
         this.amount = amount;
     }
 }
+
+
+
+

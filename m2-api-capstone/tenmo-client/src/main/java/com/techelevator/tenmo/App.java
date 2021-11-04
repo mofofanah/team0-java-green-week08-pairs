@@ -8,6 +8,10 @@ import com.techelevator.tenmo.auth.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.UserService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+
 public class App {
 
 private static final String API_BASE_URL = "http://localhost:8080/";
@@ -70,7 +74,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 		String balanceNumber = accountService.retrieveAccountBalance(currentUser.getUser().getId()).getBalance().toString();
-		System.out.println("Your current account balance is: $" + balanceNumber);
+		console.displayMessage("Your current account balance is: $" + balanceNumber);
 	}
 
 	private void viewTransferHistory() {
@@ -86,7 +90,26 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		List<String> selectableIds = console.displayUserList(userService.retrieveAllUsers(), (long)currentUser.getUser().getId());
+		String validSelection = selectValidUser(selectableIds);
+
+		if (!validSelection.equals("0")) {
+
+
+			BigDecimal amount = new BigDecimal(console.getUserInputDouble("Enter amount"));
+			BigDecimal correctedAmount = amount.setScale(2, RoundingMode.FLOOR);
+			BigDecimal balance = new BigDecimal(accountService.retrieveAccountBalance(currentUser.getUser().getId()).getBalance().toString());
+
+			if (correctedAmount.compareTo(balance) == -1 || correctedAmount.compareTo(balance) == 0) {
+				System.out.println("Method call to do transfer with amount " + correctedAmount);
+			}
+
+			else {
+				console.displayMessage("Insufficient funds.");
+			}
+
+		}
+
 	}
 
 	private void requestBucks() {
@@ -153,5 +176,26 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String username = console.getUserInput("Username");
 		String password = console.getUserInput("Password");
 		return new UserCredentials(username, password);
+	}
+
+	private String selectValidUser(List<String> selectableUsers) {
+
+    	while (true) {
+
+    		String input = console.getUserInput("Enter ID of user you are sending to (0 to cancel)");
+
+    		if (selectableUsers.contains(input) || input.equals("0")) {
+
+    			return input;
+			}
+			else {
+
+				console.displayMessage("Please enter a valid ID. ");
+
+			}
+
+
+		}
+
 	}
 }
