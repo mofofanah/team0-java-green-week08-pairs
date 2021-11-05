@@ -5,6 +5,7 @@ import com.techelevator.tenmo.models.Transfer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -21,8 +22,9 @@ public class TransferService {
 
 
     public Transfer sendBucks(Long userId, Long targetAccountId, BigDecimal amount) {
-
-        return restTemplate.exchange(API_BASE_URL + "transfers/" , HttpMethod.POST, this.makeAuthEntity(), Transfer.class).getBody();
+        Transfer transfer = this.makeSendTransfer(userId, targetAccountId, amount);
+        HttpEntity entity = this.makeTransferEntity(transfer);
+        return restTemplate.exchange(API_BASE_URL + "transfers/" , HttpMethod.POST, entity, Transfer.class).getBody();
     }
 
 
@@ -30,11 +32,21 @@ public class TransferService {
 
 
 
+    public Transfer makeSendTransfer(Long userId, Long targetAccountId, BigDecimal amount) {
+        Transfer transfer = new Transfer();
+        transfer.setAccountFrom(userId);
+        transfer.setAccountTo(targetAccountId);
+        transfer.setAmount(amount);
+        return transfer;
+    }
 
-
-
-
-
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(AUTH_TOKEN);
+        HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
+        return entity;
+    }
 
     private HttpEntity makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();

@@ -2,10 +2,12 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.auth.models.AuthenticatedUser;
 import com.techelevator.tenmo.auth.models.UserCredentials;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.auth.services.AuthenticationService;
 import com.techelevator.tenmo.auth.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
 
 import java.math.BigDecimal;
@@ -33,6 +35,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticationService authenticationService;
     private AccountService accountService = new AccountService(API_BASE_URL);
     private UserService userService = new UserService(API_BASE_URL);
+	private TransferService transferService = new TransferService(API_BASE_URL);
 
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -95,13 +98,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		if (!validSelection.equals("0")) {
 
-
 			BigDecimal amount = new BigDecimal(console.getUserInputDouble("Enter amount"));
 			BigDecimal correctedAmount = amount.setScale(2, RoundingMode.FLOOR);
 			BigDecimal balance = new BigDecimal(accountService.retrieveAccountBalance(currentUser.getUser().getId()).getBalance().toString());
 
 			if (correctedAmount.compareTo(balance) == -1 || correctedAmount.compareTo(balance) == 0) {
-				System.out.println("Method call to do transfer with amount " + correctedAmount);
+				Transfer finalTransfer = transferService.sendBucks((long)currentUser.getUser().getId(),Long.valueOf(validSelection), correctedAmount);
+				if (finalTransfer == null) {
+					System.out.println("null");
+				}
+				else {
+					console.displayTransfer(finalTransfer);
+				}
+
 			}
 
 			else {
@@ -165,6 +174,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				currentUser = authenticationService.login(credentials);
 				accountService.setAUTH_TOKEN(currentUser.getToken());
 				userService.setAUTH_TOKEN(currentUser.getToken());
+				transferService.setAUTH_TOKEN(currentUser.getToken());
 				//TODO - Pass token to service classes
 			} catch (AuthenticationServiceException e) {
 				console.showLoginFailed(e.getMessage());

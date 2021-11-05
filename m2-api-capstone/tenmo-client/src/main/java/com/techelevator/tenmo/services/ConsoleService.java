@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 
 import com.techelevator.tenmo.auth.models.User;
+import com.techelevator.tenmo.models.Transfer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -113,6 +114,48 @@ public class ConsoleService {
 		System.out.print("\n");
 
 		return selectableIds;
+
+	} // end displayUserList()
+
+	public void displayTransfer(Transfer transfer) {
+
+		for (int i = 0; i < 30; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+		System.out.println("Transfer Details");
+		for (int i = 0; i < 30; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+		System.out.println("Id: " + transfer.getTransferId());
+		System.out.println("From: " + transfer.getNameAccountFrom());
+		System.out.println("To: " + transfer.getNameAccountTo());
+		System.out.println("Type: " + this.transferTypeToString(transfer.getTransferTypeId()));
+		System.out.println("Status: " + this.transferStatusToString(transfer.getTransferStatusId()));
+		System.out.println("Amount: $" + transfer.getAmount());
+		System.out.print("\n");
+	}
+
+	private String transferTypeToString(Long code) {
+		if (code == 1) {
+			return "Request";
+		} else if (code == 2) {
+			return "Send";
+		} else {
+			return "";
+		}
+	}
+
+	private String transferStatusToString(Long code) {
+		if (code == 1) {
+			return "Pending";
+		} else if (code == 2) {
+			return "Approved";
+		} else if (code == 3) {
+			return "Rejected";
+		}
+		return "";
 	}
 
 	public String getUserInput(String prompt) {
