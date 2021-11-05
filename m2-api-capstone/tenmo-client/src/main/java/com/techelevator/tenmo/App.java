@@ -9,9 +9,11 @@ import com.techelevator.tenmo.auth.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.tenmo.services.UserService;
+import io.cucumber.java.cy_gb.A;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 public class App {
@@ -82,7 +84,28 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		List<Transfer> transferHistoryList = transferService.retrieveTransferHistory((long)currentUser.getUser().getId());
+
+		while(true) {
+			List<String> selectableIds = console.displayTransferList(transferHistoryList, currentUser.getUser().getUsername());
+			String validSelection = this.selectValidId(selectableIds, "Please enter transfer ID to view details (0 to cancel)");
+
+			if (!validSelection.equals("0")) {
+
+				for (Transfer transfer : transferHistoryList) {
+					if (transfer.getTransferId().toString().equals(validSelection)) {
+
+						console.displayTransfer(transfer);
+						console.waitForEnter();
+					}
+				}
+
+			}
+			else {
+				break;
+			}
+		}
+
 	}
 
 	private void viewPendingRequests() {
@@ -94,7 +117,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void sendBucks() {
 		// TODO Auto-generated method stub
 		List<String> selectableIds = console.displayUserList(userService.retrieveAllUsers(), (long)currentUser.getUser().getId());
-		String validSelection = selectValidUser(selectableIds);
+		String validSelection = this.selectValidId(selectableIds, "Enter ID of user you are sending to (0 to cancel)");
 
 		if (!validSelection.equals("0")) {
 
@@ -188,11 +211,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		return new UserCredentials(username, password);
 	}
 
-	private String selectValidUser(List<String> selectableUsers) {
+	private String selectValidId(List<String> selectableUsers, String prompt) {
 
     	while (true) {
 
-    		String input = console.getUserInput("Enter ID of user you are sending to (0 to cancel)");
+    		String input = console.getUserInput(prompt);
 
     		if (selectableUsers.contains(input) || input.equals("0")) {
 

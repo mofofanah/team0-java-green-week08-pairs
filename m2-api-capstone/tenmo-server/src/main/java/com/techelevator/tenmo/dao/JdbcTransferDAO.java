@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -118,8 +119,40 @@ public class JdbcTransferDAO implements TransferDAO {
     }
 
     @Override
-    public List<Transfer> retrieveTransferHistory(int userId) {
-        return null;
+    public List<Transfer> retrieveTransferHistory(Long userId) {
+
+        List<Transfer> listOfTransfers = new ArrayList<>();
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(
+                    "SELECT transfers.transfer_id, transfers.transfer_type_id, transfers.transfer_status_id, transfers.account_from, u3.username AS from_user , transfers.account_to, u2.username AS to_user, transfers.amount " +
+                            "FROM users u1 " +
+                            "JOIN accounts a1 ON u1.user_id = a1.user_id " +
+                            "JOIN transfers ON a1.account_id = transfers.account_from OR a1.account_id = transfers.account_to " +
+                            "JOIN accounts a2 ON transfers.account_to = a2.account_id " +
+                            "JOIN users u2 ON a2.user_id = u2.user_id " +
+                            "JOIN accounts a3 ON transfers.account_from = a3.account_id " +
+                            "JOIN users u3 ON a3.user_id = u3.user_id " +
+                            "WHERE u1.user_id = ?",
+                            userId
+        );
+
+         while(results.next()) {
+
+
+             listOfTransfers.add(this.makeReturnTransfer(
+             results.getLong("transfer_id"),
+             results.getLong("transfer_type_id"),
+             results.getLong("transfer_status_id"),
+             results.getLong("account_From"),
+             results.getString("from_user"),
+             results.getLong("account_To"),
+             results.getString("to_user"),
+             results.getBigDecimal("amount")
+             ));
+
+         }
+
+         return listOfTransfers;
     }
 
     @Override
