@@ -9,6 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TransferService {
 
@@ -27,6 +30,15 @@ public class TransferService {
         return restTemplate.exchange(API_BASE_URL + "transfers/" , HttpMethod.POST, entity, Transfer.class).getBody();
     }
 
+    public List<Transfer> retrieveTransferHistory(Long userId) {
+
+        HttpEntity entity = this.makeAuthEntity();
+        Transfer[] transferArray= restTemplate.exchange(API_BASE_URL + "transfers/" + userId, HttpMethod.GET, entity, Transfer[].class).getBody();
+
+        List<Transfer> listOfTransfers = Arrays.asList(transferArray);
+
+        return listOfTransfers;
+    }
 
 
 

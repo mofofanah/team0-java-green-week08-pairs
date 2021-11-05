@@ -117,6 +117,56 @@ public class ConsoleService {
 
 	} // end displayUserList()
 
+
+	public List<String> displayTransferList(List<Transfer> listOfTransfer, String userName) {
+
+		List<String> selectableIds = new ArrayList<>();
+		String leftColumn = "%-10s";
+		String middleColumn = "%-20s";
+
+		for (int i = 0; i < 40; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+		System.out.println(String.format(leftColumn, "Transfers"));
+		System.out.println(String.format(leftColumn, "ID") + String.format(middleColumn, "From/To") + "Amount");
+
+		for (int i = 0; i < 40; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+
+		for (Transfer transfer: listOfTransfer) {
+
+			String toOrFrom = "";
+
+			if (transfer.getNameAccountFrom().equals(userName)){
+
+				toOrFrom = "To:    " + transfer.getNameAccountTo();
+			}
+			else if (transfer.getNameAccountTo().equals(userName)) {
+
+				toOrFrom = "From:  " + transfer.getNameAccountFrom();
+			}
+			else {
+				toOrFrom = "Unspecified";
+			}
+
+			selectableIds.add(transfer.getTransferId().toString());
+			System.out.println(String.format(leftColumn, transfer.getTransferId().toString()) + String.format(middleColumn, toOrFrom ) + "$" + transfer.getAmount());
+
+
+		}
+
+		for (int i = 0; i < 10; i++) {
+			System.out.print("-");
+		}
+		System.out.print("\n");
+
+		return selectableIds;
+
+	} // end displayTransferList()
+
 	public void displayTransfer(Transfer transfer) {
 
 		for (int i = 0; i < 30; i++) {
@@ -156,6 +206,13 @@ public class ConsoleService {
 			return "Rejected";
 		}
 		return "";
+	}
+
+	public void waitForEnter() {
+		out.println("----------");
+		out.println("Please hit enter to continue");
+		out.flush();
+		in.nextLine();
 	}
 
 	public String getUserInput(String prompt) {
