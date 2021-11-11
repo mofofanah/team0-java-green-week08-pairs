@@ -126,19 +126,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			BigDecimal correctedAmount = amount.setScale(2, RoundingMode.FLOOR);
 			BigDecimal balance = new BigDecimal(accountService.retrieveAccountBalance(currentUser.getUser().getId()).getBalance().toString());
 
-			if (correctedAmount.compareTo(balance) == -1 || correctedAmount.compareTo(balance) == 0) {
-				Transfer finalTransfer = transferService.sendBucks((long)currentUser.getUser().getId(),Long.valueOf(validSelection), correctedAmount);
-				if (finalTransfer == null) {
-					System.out.println("null");
-				}
-				else {
-					console.displayTransfer(finalTransfer);
-				}
+			if(correctedAmount.compareTo(BigDecimal.ZERO) > 0) {
+				if (correctedAmount.compareTo(balance) == -1 || correctedAmount.compareTo(balance) == 0) {
+					Transfer finalTransfer = transferService.sendBucks((long) currentUser.getUser().getId(), Long.valueOf(validSelection), correctedAmount);
+					if (finalTransfer == null) {
+						System.out.println("null");
+					} else {
+						console.displayTransfer(finalTransfer);
+					}
 
-			}
-
-			else {
-				console.displayMessage("Insufficient funds.");
+				} else {
+					console.displayMessage("Insufficient funds.");
+				}
 			}
 
 		}
